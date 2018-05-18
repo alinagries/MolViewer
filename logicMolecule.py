@@ -450,9 +450,9 @@ class LogicMolecule:
             # if bPos == lenBranch -2 and (position % 4 == 0 or position == 3 or position == 7):
             #     status2 = self._statusLastAtom(atomA, position)
             #     indexB = self._longBranchIndex(atomB, atomC, status2)
-            #     if type(status2) == str:
-            #         return status
-            # else:
+                # if type(status2) == str:
+                #     return status
+            #else:
             indexB = self._longBranchIndex(atomB, atomC, status)
             indexC = self._universalIndex(atomC)
             self._createBond(atomC, atomB, indexC, indexB, 1)
@@ -469,9 +469,7 @@ class LogicMolecule:
         R�ckgabewerte: Bool/String  - nur zur Ueberpruefung von Fehlermeldungen
                         int - Status
         '''
-        if not atomA.isLocked(2) and not position % 2 and not self._branchNumber % 2:
-            status = 1
-        elif not atomA.isLocked(2) and not position % 2: #normale Nebenkette (von der Anzahl der gesamten Nebenkette ungerade) und gerades C-Atom, an dem sie liegt.
+        if not atomA.isLocked(2) and not position % 2: #normale Nebenkette und gerades C-Atom, an dem sie liegt.
             status = 1
         elif atomA.isLocked(2) and position % 2: #2.Nebenkette an ungeraden C-atom
             status = 4
@@ -486,21 +484,23 @@ class LogicMolecule:
     def _statusLastAtom(self, atomA, position):
         '''
         Teilt dem letzten Atom einer Nebenkette den richtigen Status zu, der nacher das BondModel bestimmt.
-        Vorrübergehende Funktion, bei Ausbau der Rotation nicht mehr wichtig.
+        Vorrübergehende Funktion, bei Ausbau der Rotation nicht mehr wichtig. Nur fuer Positionen, die rotiert werden muessen, d.h., 4,8,3,7
 
         Parameter: instance atomA - Atom
         R�ckgabewerte: Bool/String  - nur zur Ueberpruefung von Fehlermeldungen
                         int - Status
         '''
 
-        if not atomA.isLocked(2) and position % 2 == 0 and position % 4 == 0:
+        #unterscheiden in 2. an geradem und 2. an ungeradem c
+
+        if not atomA.isLocked(2) and position % 2 == 0 and position % 4 == 0: #erste nk , position: 4,8 --> rotiert
             status = 5
-        elif not atomA.isLocked(2) and position == 3 or position == 7 : #2.Nebenkette an ungeraden C-atom
+        elif not atomA.isLocked(3) and position % 2 == 0 and position % 4 == 0: # 2. nk an 4 oder 8 --> rotiert
+            status = 7
+        elif not atomA.isLocked(2) and position == 3 or position == 7 : #erste nk
             status = 6
-        # if not atomA.isLocked(3) and position % 2 == 0 and position % 4 == 0:
-        #     status = 6
-        # elif not atomA.isLocked(3) and position == 3 or position == 7 : #2.Nebenkette an ungeraden C-atom
-        #     status = 5
+        elif atomA.isLocked(2) and position == 3 or position == 7 : #2. nk an 3 oder 7 --> rotiert
+            status = 8
         else:
             return "Tut uns Leid. Dieses Molekuel existiert bei uns nicht. Es gibt zu viele Nebenketten an Position "+str(position)+" ."
         return status
@@ -556,6 +556,16 @@ class LogicMolecule:
             index = 2
             atom.lock(2)
             atom.updateBondModel(12) # unten
+            return index
+        elif status == 7:
+            index = 3
+            atom.lock(3)
+            atom.updateBondModel(11)
+            return index
+        elif status == 8:
+            index = 3
+            atom.lock(3)
+            atom.updateBondModel(12) 
             return index
         else:
             index = 3
