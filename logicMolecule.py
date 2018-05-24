@@ -497,9 +497,9 @@ class LogicMolecule:
             status = 5
         elif not atomA.isLocked(3) and position % 2 == 0 and position % 4 == 0: # 2. nk an 4 oder 8 --> rotiert
             status = 7
-        elif not atomA.isLocked(2) and position == 3 or position == 7 : #erste nk
+        elif not atomA.isLocked(2) and (position == 3 or position == 7) : #erste nk
             status = 6
-        elif atomA.isLocked(2) and position == 3 or position == 7 : #2. nk an 3 oder 7 --> rotiert
+        elif not atomA.isLocked(3) and (position == 3 or position == 7 ): #2. nk an 3 oder 7 --> rotiert
             status = 8
         else:
             return "Tut uns Leid. Dieses Molekuel existiert bei uns nicht. Es gibt zu viele Nebenketten an Position "+str(position)+" ."
@@ -560,12 +560,12 @@ class LogicMolecule:
         elif status == 7:
             index = 3
             atom.lock(3)
-            atom.updateBondModel(11)
+            atom.updateBondModel(13)
             return index
         elif status == 8:
             index = 3
             atom.lock(3)
-            atom.updateBondModel(12) 
+            atom.updateBondModel(14) 
             return index
         else:
             index = 3
